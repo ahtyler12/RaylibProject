@@ -1,6 +1,34 @@
 #include "raylib.h"
 #include "Hitbox.h"
-#include <list>
+#include <vector>
+ 
+enum InputTypes
+{
+    UP,
+    DOWN,
+    LEFT,
+    RIGHT,
+    ATTACK
+};
+
+struct InputData
+{   
+    bool up;
+    bool down;
+    bool left;
+    bool right;
+    bool attack;
+
+    void Reset()
+    {
+        up = false;
+        down = false;
+        left = false;
+        right = false;
+        attack = false;
+    }
+    
+};
 
 
 class Entity
@@ -17,6 +45,7 @@ class Entity
     float backWalkSpeed;
     float forwarddashDistance;
     float backdashDistance;
+    Vector3 velocity;
     float jumpVelocity;
     Vector3 position;
     //Current number of jumps
@@ -36,7 +65,7 @@ class Entity
     bool isStuckInEnemy;
 
     /*May need a different method to handle this*/
-    std::list<Hitbox> activeHitboxes;
+    std::vector<Hitbox> activeHitboxes;
 
     /*Damage Related*/
     int stunFrames;
@@ -58,6 +87,14 @@ class Entity
     float hitStunDecayModifier; 
     int comboCounter;
 
+    /*Input variables*/
+    int INPUT_BUFFER_SIZE = 60;
+    InputData inputCommand;
+    std::vector<InputData> inputBuffer;
+    int bufferIndex = -1;
+
+    //inputBuffer.resize(INPUT_BUFFER_SIZE);
+
 
     /*Reference to the other player*/
     Entity* otherEntity;
@@ -72,5 +109,12 @@ class Entity
     void Draw();
     void Update();
     void UpdateAnimations(unsigned int _animIndex);
+    void UpdatePhysics();
+    void GatherInput();
+    bool wasInputPressedOnFrame(InputTypes inputToCheck, int frame);
+    bool wasInputPressed(InputTypes inputToCheck);
+    void UpdateInputs();
+    InputData GetCurrentInputCommand();
+    InputData GetLastInputCommand();
 
 };

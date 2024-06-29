@@ -14,6 +14,113 @@ Entity::Entity()
     debug = true;
     activeHitboxes.clear();
     comboCounter = 0;
+    inputBuffer.resize(INPUT_BUFFER_SIZE);
+}
+
+bool Entity::wasInputPressedOnFrame(InputTypes inputToCheck, int frame)
+{
+    const unsigned int _bufferIndex = frame % inputBuffer.max_size();
+    const unsigned int _lastBufferIndex = (inputBuffer.max_size() + frame -1) % inputBuffer.max_size();
+
+    const InputData currentInput = inputBuffer.at(_bufferIndex);
+    const InputData lastInput = inputBuffer.at(_lastBufferIndex);
+
+    bool Pressed =  false;
+    switch (inputToCheck)
+    {
+        case  InputTypes::UP:
+        {             
+            Pressed = currentInput.up && !lastInput.up;
+            break;
+        }
+        case  InputTypes::DOWN:
+        {             
+            Pressed = currentInput.down && !lastInput.down;
+            break;
+        }
+        case  InputTypes::RIGHT:
+        {             
+            Pressed = currentInput.right && !lastInput.right;
+            break;
+        }
+        case  InputTypes::LEFT:
+        {             
+            Pressed = currentInput.left && !lastInput.left;
+            break;
+        }
+        case  InputTypes::ATTACK:
+        {             
+            Pressed = currentInput.attack && !lastInput.attack;
+            break;
+        }
+        
+        default:
+        {     
+            Pressed = false;
+            break;
+        }
+    }
+
+    return Pressed;
+}
+
+bool Entity::wasInputPressed(InputTypes inputToCheck)
+{
+    const InputData currentInput = GetCurrentInputCommand();
+    const InputData lastInput = GetLastInputCommand();
+    bool Pressed = false;
+
+    switch (inputToCheck)
+    {
+        case  InputTypes::UP:
+        {             
+            Pressed = currentInput.up && !lastInput.up;
+            break;
+        }
+        case  InputTypes::DOWN:
+        {             
+            Pressed = currentInput.down && !lastInput.down;
+            break;
+        }
+        case  InputTypes::RIGHT:
+        {             
+            Pressed = currentInput.right && !lastInput.right;
+            break;
+        }
+        case  InputTypes::LEFT:
+        {             
+            Pressed = currentInput.left && !lastInput.left;
+            break;
+        }
+        case  InputTypes::ATTACK:
+        {             
+            Pressed = currentInput.attack && !lastInput.attack;
+            break;
+        }
+        
+        default:
+        {     
+            Pressed = false;
+            break;
+        }
+    }
+
+    return Pressed;
+}
+
+void Entity::UpdateInputs()
+{
+    bufferIndex = (bufferIndex +1) % inputBuffer.max_size();
+}
+
+InputData Entity::GetCurrentInputCommand()
+{
+    return inputBuffer.at(bufferIndex);
+}
+
+InputData Entity::GetLastInputCommand()
+{
+    return inputBuffer.at((inputBuffer.max_size() + bufferIndex -1) % inputBuffer.max_size());
 }
 
 bool Entity::CheckCollision(Entity *entity)
@@ -46,4 +153,34 @@ void Entity::UpdateAnimations(unsigned int _animIndex)
     unsigned int currentAnimFrame = 0;
     currentAnimFrame = (currentAnimFrame +1)%anim.frameCount; //Update the current frame of animation
     UpdateModelAnimation(entityModel, anim, currentAnimFrame);
+}
+
+void Entity::UpdatePhysics()
+{
+    /*Determine if oponent is on right or left*/
+    if(otherEntity->position.x > position.x)
+    {
+        isFacingRight = true;
+    }
+    else
+    {
+        isFacingRight = false;
+    }
+
+        position =  {position.x + velocity.x, position.y + velocity.y, position.z + velocity.z};
+
+}
+
+void Entity::GatherInput()
+{
+    if(IsKeyPressed(KEY_LEFT))
+    {
+        inputCommand.left = true;
+        velocity.x += 200;
+    }
+    else if(IsKeyPressed(KEY_RIGHT))
+    {
+        velocity.x += -200;
+        inputCommand.right = true;
+    }
 }
