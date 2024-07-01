@@ -25,6 +25,7 @@ struct CombatStateContext
 {
     bool bTransition = false;
     CombatStateID NextState = CombatStateID::STANDING;
+    std::string name = "";
     //Add Input data here
 
     void TransitionToState(CombatStateID StateID)

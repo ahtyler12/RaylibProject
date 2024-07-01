@@ -1,5 +1,6 @@
 #include "Entity.h"
 
+
 Entity::Entity()
 {
     currentMeter = maxMeter;
@@ -7,14 +8,15 @@ Entity::Entity()
     entityModel = LoadModel("Eve.glb"); //Should have a variable for the path so that every entity can load it's own model
     entityAnimations = LoadModelAnimations("Eve.glb", &entityAnimCount);
     animIndex = 1;
-    position = {.0f,0.f,0.f};
     rotationAngle = 90.f;
     rotationAxis =  {1.f, 0.f,0.f};
-    scale = {.01f,.01f,.01f};
+    scale = {1.f,1.f,1.f};
     debug = true;
     activeHitboxes.clear();
     comboCounter = 0;
     inputBuffer.resize(INPUT_BUFFER_SIZE);
+    velocity = {0.f,0.f,0.f};
+    otherEntity = nullptr;
 }
 
 bool Entity::wasInputPressedOnFrame(InputTypes inputToCheck, int frame)
@@ -143,7 +145,9 @@ void Entity::Draw()
 
 void Entity::Update()
 {
+    UpdatePhysics();
     UpdateAnimations(animIndex);
+    
 }
 
 void Entity::UpdateAnimations(unsigned int _animIndex)
@@ -158,29 +162,35 @@ void Entity::UpdateAnimations(unsigned int _animIndex)
 void Entity::UpdatePhysics()
 {
     /*Determine if oponent is on right or left*/
-    if(otherEntity->position.x > position.x)
+    if(otherEntity != nullptr)
     {
-        isFacingRight = true;
-    }
-    else
-    {
-        isFacingRight = false;
+        if(otherEntity->position.x > position.x)
+        {
+            isFacingRight = true;
+        }
+        else
+        {
+            isFacingRight = false;
+        }
     }
 
-        position =  {position.x + velocity.x, position.y + velocity.y, position.z + velocity.z};
-
+    position =  {position.x + velocity.x, position.y + velocity.y, position.z + velocity.z};
+    //std::cout << "Current Position X:" << position.x << ", Y: "<< position.y << ", Z:" << position.z<< std::endl;
+    //std::cout << "Current velocity X:" << velocity.x << ", Y: "<< velocity.y << ", Z:" << velocity.z<< std::endl;
 }
 
 void Entity::GatherInput()
 {
-    if(IsKeyPressed(KEY_LEFT))
+    if(IsKeyDown(KEY_LEFT))
     {
         inputCommand.left = true;
-        velocity.x += 200;
+        std::cout<<"Pressing Left!"<<std::endl;
+        velocity.x += 2;
     }
-    else if(IsKeyPressed(KEY_RIGHT))
+    else if(IsKeyDown(KEY_RIGHT))
     {
-        velocity.x += -200;
+        velocity.x -= 2;
+        std::cout<<"Pressing Right!"<<std::endl;
         inputCommand.right = true;
     }
 }

@@ -1,5 +1,6 @@
 #include "raylib.h"
 #include "Hitbox.h"
+#include <iostream>
 #include <vector>
  
 enum InputTypes
@@ -74,9 +75,9 @@ class Entity
     bool shouldGroundBounce;
     bool counterHitActive;
     //Number of frames where an Instant Block is considered valid
-    const int instantBlockWindow = 6;
+    static const int instantBlockWindow = 6;
     //Number of frames needed to pass to not get locked out of instant block
-    const int ibLockOut = 10;
+    static const int ibLockOut = 10;
     //Number of frames before another instant block can be performed
     int ibCoolDown;
     //The frame to start checking for an Instant Block. -1 indicates no opportunity for instant block
@@ -92,10 +93,7 @@ class Entity
     InputData inputCommand;
     std::vector<InputData> inputBuffer;
     int bufferIndex = -1;
-
-    //inputBuffer.resize(INPUT_BUFFER_SIZE);
-
-
+    
     /*Reference to the other player*/
     Entity* otherEntity;
 
