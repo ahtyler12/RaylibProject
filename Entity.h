@@ -57,8 +57,9 @@ class Entity
     /*Model Related Variables*/
     Model entityModel;
     ModelAnimation *entityAnimations;
-    unsigned int entityAnimCount;
-    unsigned int animIndex; 
+    int entityAnimCount;
+    int animIndex; 
+    unsigned int currentAnimFrame = 0;
     Vector3 rotationAxis, scale /*this might be useful for flipping the model need to test more*/;
     float rotationAngle;
     bool isFacingRight;
@@ -107,6 +108,7 @@ class Entity
     void Draw();
     void Update();
     void UpdateAnimations(unsigned int _animIndex);
+    void PlayAnimation(ModelAnimation anim);
     void UpdatePhysics();
     void GatherInput();
     bool wasInputPressedOnFrame(InputTypes inputToCheck, int frame);

@@ -17,6 +17,8 @@ Entity::Entity()
     inputBuffer.resize(INPUT_BUFFER_SIZE);
     velocity = {0.f,0.f,0.f};
     otherEntity = nullptr;
+    animIndex = 0;
+    jumpVelocity = 25.f;
 }
 
 bool Entity::wasInputPressedOnFrame(InputTypes inputToCheck, int frame)
@@ -146,17 +148,29 @@ void Entity::Draw()
 void Entity::Update()
 {
     UpdatePhysics();
-    UpdateAnimations(animIndex);
+    PlayAnimation(entityAnimations[animIndex]);
     
 }
 
 void Entity::UpdateAnimations(unsigned int _animIndex)
 {
     /*May need to make these variables globals for state machine functionality*/
-    ModelAnimation anim = entityAnimations[_animIndex]; //Set the current animation
-    unsigned int currentAnimFrame = 0;
-    currentAnimFrame = (currentAnimFrame +1)%anim.frameCount; //Update the current frame of animation
+    ModelAnimation currentAnim = entityAnimations[_animIndex]; //Set the current animation
+    currentAnimFrame = 0;
+    PlayAnimation(currentAnim);
+}
+
+void Entity::PlayAnimation(ModelAnimation anim)
+{
     UpdateModelAnimation(entityModel, anim, currentAnimFrame);
+    if(currentAnimFrame >= anim.frameCount)
+    {
+        currentAnimFrame = 0; //Should Automatically loop the animation
+    }
+    else
+    {
+        currentAnimFrame++;
+    }
 }
 
 void Entity::UpdatePhysics()
@@ -174,9 +188,17 @@ void Entity::UpdatePhysics()
         }
     }
 
+    if(position.y > 0)
+    {
+        velocity.y -= 2;
+    }
+
     position =  {position.x + velocity.x, position.y + velocity.y, position.z + velocity.z};
-    //std::cout << "Current Position X:" << position.x << ", Y: "<< position.y << ", Z:" << position.z<< std::endl;
-    //std::cout << "Current velocity X:" << velocity.x << ", Y: "<< velocity.y << ", Z:" << velocity.z<< std::endl;
+    if(position.y < 0)
+    {
+        position.y = 0;
+        velocity.y = 0;
+    }
 }
 
 void Entity::GatherInput()
@@ -185,12 +207,35 @@ void Entity::GatherInput()
     {
         inputCommand.left = true;
         std::cout<<"Pressing Left!"<<std::endl;
-        velocity.x += 2;
+        velocity.x -= 2;
     }
     else if(IsKeyDown(KEY_RIGHT))
     {
-        velocity.x -= 2;
+        velocity.x += 2;
         std::cout<<"Pressing Right!"<<std::endl;
         inputCommand.right = true;
+    }
+    else
+    {
+        velocity.x = 0;
+    }
+
+    if(IsKeyPressed(KEY_UP))
+    {
+        velocity.y = jumpVelocity;
+    }
+
+    if(IsKeyPressed(KEY_C))
+    {
+        if(scale.x > 0)
+        {
+            scale.x = -1;
+            scale.y = -1;
+        }
+        else
+        {
+           scale.x = 1;
+           scale.y = 1;
+        }
     }
 }
