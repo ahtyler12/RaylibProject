@@ -14,6 +14,7 @@ Entity::Entity()
     debug = true;
     comboCounter = 0;
     inputBuffer.resize(INPUT_BUFFER_SIZE);
+    hurtBoxes.resize(3); 
     velocity = {0};
     screenPosition = {0};
     otherEntity = nullptr;
@@ -133,12 +134,6 @@ void Entity::HandleHitEvent(HitEvent _event)
     if(hitStopFrames == 0){hitStopFrames = _event.hitStop;}
 }
 
-void Entity::GetScreenPosition(Vector2 _screenPosition)
-{
-    screenPosition.x = _screenPosition.x;
-    screenPosition.y = _screenPosition.y;
-    screenPosition.z = 0.f;
-}
 
 bool Entity::CheckCollision(Entity *entity)
 {
@@ -155,7 +150,12 @@ void Entity::Draw()
     if(debug)
     {
         DrawCubeWires(position, 10.f, 10.f, .1f, YELLOW);
-        DrawCube(Vector3{position.x, position.y + 50, position.z},50.f,100.f,10.f, BLUE); //Visual representation of the pushbox for debuging purposes
+        //Visual representation of the pushbox for debuging purposes
+        DrawBoundingBox(pushBox, GREEN);
+        for(auto box : hurtBoxes)
+        {
+            DrawBoundingBox(box, BLUE);
+        }
     }
 }
 
@@ -213,6 +213,10 @@ void Entity::UpdatePhysics()
     }
 
     position =  {position.x + velocity.x, position.y + velocity.y, position.z + velocity.z};
+    pushBox = {(Vector3){position.x - 15, position.y, position.z},(Vector3){position.x + 15, position.y + 100, position.z}}; //Update the position of the push box
+    hurtBoxes.at(0) = {(Vector3){position.x - 25, position.y, position.z},(Vector3){position.x + 25, position.y + 50, position.z}};
+    hurtBoxes.at(1) = {(Vector3){position.x - 25, position.y+50, position.z},(Vector3){position.x + 25, position.y + 100, position.z}};
+    hurtBoxes.at(2) = {(Vector3){position.x - 25, position.y+100, position.z},(Vector3){position.x + 25, position.y + 125, position.z}};
 
     //Ensure that the player never goes below the "Floor" of the level. 
     if(position.y < 0)
@@ -264,24 +268,19 @@ void Entity::GatherInput()
 
         if(IsKeyPressed(KEY_C))
         {
-            // if(scale.x > 0)
-            // {
-            //     scale.x = -1;
-            //     scale.y = -1;
-            // }
-            // else
-            // {
-            // scale.x = 1;
-            // scale.y = 1;
-            // }
-
-           if( CheckCollisionBoxes(otherEntity->pushBox, (BoundingBox){(Vector3){position.x + 50, position.y, position.z},(Vector3){position.x + 100, position.y - 75, position.z}}))
-           {
-                HitEvent testEvent;
-                testEvent.hitStop = 5;
-                otherEntity->HandleHitEvent(testEvent);
-                          
-           }   
+            BoundingBox attackBox = {(Vector3){position.x + 50, position.y, position.z},(Vector3){position.x + 50, position.y + 100, position.z}}; //For testing out damage
+            
+            for(int i = 0; i < otherEntity->hurtBoxes.size(); i++)
+            {
+                if( CheckCollisionBoxes(otherEntity->hurtBoxes[i], attackBox))
+                {
+                    HitEvent testEvent;               
+                    testEvent.hitStop = 5;
+                    otherEntity->HandleHitEvent(testEvent);
+                    break; /*If only one of the hurtboxes collide with the attack box then don't allow it to hit more than once*/
+                }  
+            }
+            
         }
     }
     

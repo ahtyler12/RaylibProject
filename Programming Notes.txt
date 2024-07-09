@@ -1,2 +1,4 @@
 Variables in camelCase
 Constants in Snake_Case
+
+BoundingBox has 2 variables min and max. Hit boxes can then be stored as BoundingBoxes with the min and max then representing the offset rather than the final positions of the boxes

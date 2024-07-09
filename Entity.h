@@ -124,6 +124,7 @@ class Entity
     /*Pushbox Data*/
     Vector3 size;
     BoundingBox pushBox;
+    std::vector<BoundingBox> hurtBoxes;
 
     bool debug;
     bool hasControl = false;
@@ -141,6 +142,5 @@ class Entity
     InputData GetCurrentInputCommand();
     InputData GetLastInputCommand();
     void HandleHitEvent(HitEvent _event);
-    void GetScreenPosition(Vector2 _screenPosition);
 
 };

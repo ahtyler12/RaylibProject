@@ -45,22 +45,9 @@ int main () {
         for(int i = 0; i < MAX_PLAYERS; i++)
         {
             entities[i].Update();
-            entities[i].GatherInput();
-            entities[i].GetScreenPosition( GetWorldToScreen(entities[i].position, camera));
-        }
-        //entities[0].GatherInput();
-
-        // if(IsKeyDown(KEY_LEFT))
-        // {
-        //     cubePosition.x += 2;
-        // }
-        // else if(IsKeyDown(KEY_RIGHT))
-        // {
-        //     cubePosition.x -= 2;
-        // }
-
+            entities[i].GatherInput();            
+        } 
         
-
         BeginDrawing();
         ClearBackground(RAYWHITE);
         BeginMode3D(camera);
@@ -75,9 +62,9 @@ int main () {
         EndDrawing();
     }
 
-    for(auto t: entities)
+    for(int i = 0; i < MAX_PLAYERS; i++)
     {
-        UnloadModel(t.entityModel); //unload the model from memory     
+        UnloadModel(entities[i].entityModel); //unload the model from memory     
     };
     
     CloseWindow();
