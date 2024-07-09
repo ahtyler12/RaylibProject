@@ -27,13 +27,14 @@ int main () {
     Entity entities[2];
     entities[0] = Entity();
     entities[0].position = player1Start;
+    entities[0].hasControl = true;
     entities[1] = Entity();
     entities[1].position = player2Start;
 
     entities[0].otherEntity = &entities[1];
     entities[1].otherEntity = &entities[0];
 
-    Vector3 cubePosition = {0.f,0.f,0.f};
+   
     const int MAX_PLAYERS = 2;
 
     
@@ -45,6 +46,7 @@ int main () {
         {
             entities[i].Update();
             entities[i].GatherInput();
+            entities[i].GetScreenPosition( GetWorldToScreen(entities[i].position, camera));
         }
         //entities[0].GatherInput();
 
@@ -67,8 +69,7 @@ int main () {
         {
             entities[i].Draw();
         }
-        DrawCube(cubePosition, 1.f,1.f,1.f, RED);
-        DrawGrid(10, 1.0f); 
+        
 
         EndMode3D();
         EndDrawing();

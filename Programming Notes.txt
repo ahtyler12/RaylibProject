@@ -1,0 +1,2 @@
+Variables in camelCase
+Constants in Snake_Case

@@ -6,19 +6,20 @@ Entity::Entity()
     currentMeter = maxMeter;
     currentHealth = maxHealth;
     entityModel = LoadModel("Eve.glb"); //Should have a variable for the path so that every entity can load it's own model
-    entityAnimations = LoadModelAnimations("Eve.glb", &entityAnimCount);
+    //entityAnimations = LoadModelAnimations("Eve.glb", &entityAnimCount);
     animIndex = 1;
     rotationAngle = 90.f;
     rotationAxis =  {1.f, 0.f,0.f};
     scale = {1.f,1.f,1.f};
     debug = true;
-    activeHitboxes.clear();
     comboCounter = 0;
     inputBuffer.resize(INPUT_BUFFER_SIZE);
-    velocity = {0.f,0.f,0.f};
+    velocity = {0};
+    screenPosition = {0};
     otherEntity = nullptr;
     animIndex = 0;
     jumpVelocity = 25.f;
+    hitStopFrames = 0;
 }
 
 bool Entity::wasInputPressedOnFrame(InputTypes inputToCheck, int frame)
@@ -42,14 +43,14 @@ bool Entity::wasInputPressedOnFrame(InputTypes inputToCheck, int frame)
             Pressed = currentInput.down && !lastInput.down;
             break;
         }
-        case  InputTypes::RIGHT:
+        case  InputTypes::FORWARD:
         {             
-            Pressed = currentInput.right && !lastInput.right;
+            Pressed = currentInput.forward && !lastInput.forward;
             break;
         }
-        case  InputTypes::LEFT:
+        case  InputTypes::BACKWARD:
         {             
-            Pressed = currentInput.left && !lastInput.left;
+            Pressed = currentInput.backward && !lastInput.backward;
             break;
         }
         case  InputTypes::ATTACK:
@@ -86,14 +87,14 @@ bool Entity::wasInputPressed(InputTypes inputToCheck)
             Pressed = currentInput.down && !lastInput.down;
             break;
         }
-        case  InputTypes::RIGHT:
+        case  InputTypes::FORWARD:
         {             
-            Pressed = currentInput.right && !lastInput.right;
+            Pressed = currentInput.forward && !lastInput.forward;
             break;
         }
-        case  InputTypes::LEFT:
+        case  InputTypes::BACKWARD:
         {             
-            Pressed = currentInput.left && !lastInput.left;
+            Pressed = currentInput.backward && !lastInput.backward;
             break;
         }
         case  InputTypes::ATTACK:
@@ -127,6 +128,18 @@ InputData Entity::GetLastInputCommand()
     return inputBuffer.at((inputBuffer.max_size() + bufferIndex -1) % inputBuffer.max_size());
 }
 
+void Entity::HandleHitEvent(HitEvent _event)
+{
+    if(hitStopFrames == 0){hitStopFrames = _event.hitStop;}
+}
+
+void Entity::GetScreenPosition(Vector2 _screenPosition)
+{
+    screenPosition.x = _screenPosition.x;
+    screenPosition.y = _screenPosition.y;
+    screenPosition.z = 0.f;
+}
+
 bool Entity::CheckCollision(Entity *entity)
 {
     if(CheckCollisionBoxes(pushBox, entity->pushBox))
@@ -138,17 +151,18 @@ bool Entity::CheckCollision(Entity *entity)
 
 void Entity::Draw()
 {
-    DrawModelEx(entityModel, position, rotationAxis, rotationAngle, scale, WHITE);
+    //DrawModelEx(entityModel, position, rotationAxis, rotationAngle, scale, WHITE);
     if(debug)
     {
-        DrawCubeWires(position, 1, 1, .1f, YELLOW);
+        DrawCubeWires(position, 10.f, 10.f, .1f, YELLOW);
+        DrawCube(Vector3{position.x, position.y + 50, position.z},50.f,100.f,10.f, BLUE); //Visual representation of the pushbox for debuging purposes
     }
 }
 
 void Entity::Update()
 {
     UpdatePhysics();
-    PlayAnimation(entityAnimations[animIndex]);
+    //PlayAnimation(entityAnimations[animIndex]);
     
 }
 
@@ -175,6 +189,11 @@ void Entity::PlayAnimation(ModelAnimation anim)
 
 void Entity::UpdatePhysics()
 {
+    if(hitStopFrames > 0)
+    {
+        std::cout << "In hitstop for:" << hitStopFrames << " frames!!!"<< std::endl;
+        hitStopFrames-=1;
+    }
     /*Determine if oponent is on right or left*/
     if(otherEntity != nullptr)
     {
@@ -190,10 +209,12 @@ void Entity::UpdatePhysics()
 
     if(position.y > 0)
     {
-        velocity.y -= 2;
+        velocity.y -= 2; //Should be a variable rather than a literal. 
     }
 
     position =  {position.x + velocity.x, position.y + velocity.y, position.z + velocity.z};
+
+    //Ensure that the player never goes below the "Floor" of the level. 
     if(position.y < 0)
     {
         position.y = 0;
@@ -203,39 +224,65 @@ void Entity::UpdatePhysics()
 
 void Entity::GatherInput()
 {
-    if(IsKeyDown(KEY_LEFT))
+    if(hasControl)
     {
-        inputCommand.left = true;
-        std::cout<<"Pressing Left!"<<std::endl;
-        velocity.x -= 2;
-    }
-    else if(IsKeyDown(KEY_RIGHT))
-    {
-        velocity.x += 2;
-        std::cout<<"Pressing Right!"<<std::endl;
-        inputCommand.right = true;
-    }
-    else
-    {
-        velocity.x = 0;
-    }
-
-    if(IsKeyPressed(KEY_UP))
-    {
-        velocity.y = jumpVelocity;
-    }
-
-    if(IsKeyPressed(KEY_C))
-    {
-        if(scale.x > 0)
+        if(IsKeyDown(KEY_LEFT))
         {
-            scale.x = -1;
-            scale.y = -1;
+            if(isFacingRight)
+            {
+                inputCommand.backward = true;
+            }
+            else
+            {
+                inputCommand.forward = true;
+            }
+            
+            velocity.x -= 2;
+        }
+        else if(IsKeyDown(KEY_RIGHT))
+        {
+            if(isFacingRight)
+            {
+                inputCommand.forward = true;
+            }
+            else
+            {
+                inputCommand.backward = true;
+            }
+            velocity.x += 2;
+           
         }
         else
         {
-           scale.x = 1;
-           scale.y = 1;
+            velocity.x = 0;
+        }
+
+        if(IsKeyPressed(KEY_UP))
+        {
+            velocity.y = jumpVelocity;
+        }
+
+        if(IsKeyPressed(KEY_C))
+        {
+            // if(scale.x > 0)
+            // {
+            //     scale.x = -1;
+            //     scale.y = -1;
+            // }
+            // else
+            // {
+            // scale.x = 1;
+            // scale.y = 1;
+            // }
+
+           if( CheckCollisionBoxes(otherEntity->pushBox, (BoundingBox){(Vector3){position.x + 50, position.y, position.z},(Vector3){position.x + 100, position.y - 75, position.z}}))
+           {
+                HitEvent testEvent;
+                testEvent.hitStop = 5;
+                otherEntity->HandleHitEvent(testEvent);
+                          
+           }   
         }
     }
+    
 }

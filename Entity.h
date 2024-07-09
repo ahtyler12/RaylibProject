@@ -7,25 +7,49 @@ enum InputTypes
 {
     UP,
     DOWN,
-    LEFT,
-    RIGHT,
+    BACKWARD,
+    FORWARD,
     ATTACK
+};
+
+struct HitEvent //This gets sent to the entity that receives a hit in order to update physics
+{
+    int pushBack = 0;
+    int hitStun = 0;
+    int hitStop = 0;
+    bool isLaunch = false;
+    int launchForce = 0;
+};
+
+struct AttackProperties //Holds properties for each attack
+{
+    /*Properties for the hitbox bounding box*/
+    float top;
+    float bottom;
+    float front;
+    float back;
+    float left;
+    float right;
+    float size;
+    Vector3 position;
+
+
 };
 
 struct InputData
 {   
     bool up;
     bool down;
-    bool left;
-    bool right;
+    bool backward;
+    bool forward;
     bool attack;
 
     void Reset()
     {
         up = false;
         down = false;
-        left = false;
-        right = false;
+        forward = false;
+        backward = false;
         attack = false;
     }
     
@@ -49,6 +73,7 @@ class Entity
     Vector3 velocity;
     float jumpVelocity;
     Vector3 position;
+    Vector3 screenPosition;
     //Current number of jumps
     int jumpCount;
     //Actions available in the air
@@ -66,8 +91,6 @@ class Entity
     bool canFlip;
     bool isStuckInEnemy;
 
-    /*May need a different method to handle this*/
-    std::vector<Hitbox> activeHitboxes;
 
     /*Damage Related*/
     int stunFrames;
@@ -103,6 +126,7 @@ class Entity
     BoundingBox pushBox;
 
     bool debug;
+    bool hasControl = false;
 
     bool CheckCollision(Entity* _entity);
     void Draw();
@@ -116,5 +140,7 @@ class Entity
     void UpdateInputs();
     InputData GetCurrentInputCommand();
     InputData GetLastInputCommand();
+    void HandleHitEvent(HitEvent _event);
+    void GetScreenPosition(Vector2 _screenPosition);
 
 };
