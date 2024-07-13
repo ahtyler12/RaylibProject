@@ -4,6 +4,9 @@
 -Finish Collision System
 -Handle Updating the Pushbox position[x]
 -Handle Creating Hurtboxes
+7/12/24
+-Handle Hitboxes
+
 -Finish Movement System
 -Finish State System
 -Finish Physics System

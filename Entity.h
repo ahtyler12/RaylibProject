@@ -2,6 +2,7 @@
 #include "Hitbox.h"
 #include <iostream>
 #include <vector>
+#include "StateMachine.h"
  
 enum InputTypes
 {
@@ -125,6 +126,9 @@ class Entity
     Vector3 size;
     BoundingBox pushBox;
     std::vector<BoundingBox> hurtBoxes;
+
+    /*State Data*/
+    StateMachine stateMachine = {};
 
     bool debug;
     bool hasControl = false;

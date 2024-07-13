@@ -1,21 +1,81 @@
-#include "raylib.h"
+#include <iostream>
 
  #pragma once
 
- typedef bool (*StateTransition)(void*);//Event Callback declaration
+struct Standing
+{
+   void OnStart()
+   {
+      std::cout << "Standing Start\n";
+   }
 
- struct CommonStatesCallbacks
- {
-    StateTransition Onstart;
-    StateTransition OnEnd;
-    StateTransition OnUpdate;
- };
+   void OnUpdate()
+   {
+      
+   }
 
- class CommonStates
- {
+   void OnExit()
+   {
+      std::cout << "Standing Exit\n";
+   }
+};
 
- };
- 
+struct Crouch
+{
+   void OnStart()
+   {
+      std::cout << "Crouch Start\n";
+   }
+
+   void OnUpdate()
+   {
+
+   }
+
+   void OnExit()
+   {
+      std::cout << "Crouch Exit\n";
+   }
+};
+
+struct Jumping
+{
+   void OnStart()
+   {
+      std::cout << "Jump Start\n";
+   }
+
+   void OnUpdate()
+   {
+
+   }
+
+   void OnExit()
+   {
+      std::cout << "Jump Exit\n";
+   }
+};
+
+struct Falling
+{
+   void OnStart()
+   {
+      std::cout << "Falling Start\n";
+   }
+
+   void OnUpdate()
+   {
+
+   }
+
+   void OnExit()
+   {
+      std::cout << "Falling End\n";
+   }
+};
+
+
+
 
  
  

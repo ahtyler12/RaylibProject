@@ -21,22 +21,6 @@ enum CombatStateID : __int32
 };
 
 
-struct CombatStateContext
-{
-    bool bTransition = false;
-    CombatStateID NextState = CombatStateID::STANDING;
-    std::string name = "";
-    //Add Input data here
-
-    void TransitionToState(CombatStateID StateID)
-    {
-        bTransition = true;
-        NextState = StateID;
-    }
-
-};
-
-
 
 class StateMachine
 {
