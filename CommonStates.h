@@ -2,8 +2,18 @@
 
  #pragma once
 
+
+
+struct StateContext //Holds infromation from the Entity that owns the state machine
+{
+    
+};
+
+
 struct Standing
 {
+   bool shouldTransition = false;
+
    void OnStart()
    {
       std::cout << "Standing Start\n";
@@ -18,10 +28,16 @@ struct Standing
    {
       std::cout << "Standing Exit\n";
    }
+
+   bool TriggerTransition()
+   {
+      return shouldTransition;
+   }
 };
 
 struct Crouch
 {
+   bool shouldTransition = false;
    void OnStart()
    {
       std::cout << "Crouch Start\n";
@@ -35,6 +51,11 @@ struct Crouch
    void OnExit()
    {
       std::cout << "Crouch Exit\n";
+   }
+
+      bool TriggerTransition()
+   {
+      return shouldTransition;
    }
 };
 

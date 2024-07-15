@@ -162,6 +162,7 @@ void Entity::Draw()
 void Entity::Update()
 {
     UpdatePhysics();
+    stateMachine.HandleStateTransitions();
     //PlayAnimation(entityAnimations[animIndex]);
     
 }
