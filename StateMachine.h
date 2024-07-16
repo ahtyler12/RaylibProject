@@ -24,10 +24,10 @@ enum StateID : __int32
 struct StateCallbacks
 {
     StateID stateID;
+    std::string name;
     std::function<void()> OnStart;
     std::function<void()> OnUpdate;
     std::function<void()> OnExit;
-    std::function<bool()> TriggerTransition;
 };
 
 
@@ -43,7 +43,7 @@ class StateMachine
 
     private:
        std::vector<StateCallbacks> Callbacks;
-       void RegisterState(State _newState); //May need to return a bool if the state was unable to be added
+       void RegisterState(State* _newState); //May need to return a bool if the state was unable to be added
     
     
 };

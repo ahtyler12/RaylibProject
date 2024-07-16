@@ -1,13 +1,13 @@
 #include "StateMachine.h"
 
-void StateMachine::RegisterState(State _newState)
+void StateMachine::RegisterState(State* _newState)
 {
      
     StateCallbacks _newCallback = {};
+    _newCallback.name = _newState->name;
     _newCallback.OnStart = std::bind(State::OnStart, _newState);
     _newCallback.OnExit = std::bind(State::OnExit, _newState);
     _newCallback.OnUpdate = std::bind(State::OnUpdate, _newState);
-    _newCallback.TriggerTransition = std::bind(State::TriggerTransition, _newState);
 
     Callbacks.push_back(_newCallback);
 }
@@ -15,8 +15,10 @@ void StateMachine::RegisterState(State _newState)
 StateMachine::StateMachine()
 {
     Standing standing = {};
+    Jumping jumping = {};
 
-    RegisterState(standing);
+    RegisterState(&standing);
+    RegisterState(&jumping);
 
     currentState = Callbacks.at(0);
 
@@ -28,11 +30,6 @@ StateMachine::StateMachine()
 void StateMachine::HandleStateTransitions()
 {
     StateCallbacks _newState = {};
-
-    if(currentState.TriggerTransition())
-    {
-        //Do stuff
-    }
     
     
 }

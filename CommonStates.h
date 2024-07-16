@@ -12,17 +12,22 @@ struct StateContext //Holds infromation from the Entity that owns the state mach
 
 struct State
 {
+   public:
+   char name[256] = " ";
    virtual void OnStart(){};
    virtual void OnUpdate(){};
    virtual void OnExit(){};
-   virtual bool TriggerTransition(){return true;};
+   virtual bool TriggerTransition(){return false;};
 
 };
 
 
-struct Standing : State
+struct Standing : public State
 {
    bool shouldTransition = false;
+
+   
+   char name[256] = "Standing";;
 
    void OnStart() override
    {
@@ -45,7 +50,7 @@ struct Standing : State
    }
 };
 
-struct Crouch : State
+struct Crouch : public State
 {
    bool shouldTransition = false;
    void OnStart()
@@ -69,8 +74,9 @@ struct Crouch : State
    }
 };
 
-struct Jumping : State
+struct Jumping : public State
 {
+   char name[256] = "Jumping";
    void OnStart()
    {
       std::cout << "Jump Start\n";
