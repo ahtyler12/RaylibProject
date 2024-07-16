@@ -45,7 +45,8 @@ int main () {
         for(int i = 0; i < MAX_PLAYERS; i++)
         {
             entities[i].Update();
-            entities[i].GatherInput();            
+            entities[i].GatherInput();
+                        
         } 
         
         BeginDrawing();

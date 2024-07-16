@@ -1,12 +1,11 @@
 #include "raylib.h"
 #include "CommonStates.h"
+#include <functional>
 #include <vector>
 #include <iostream>
 #include <string>
 
 #pragma once
-
- typedef bool (*StateTransition)(void*);//Event Callback declaration
 
 enum StateID : __int32
 {
@@ -25,22 +24,26 @@ enum StateID : __int32
 struct StateCallbacks
 {
     StateID stateID;
-    StateTransition OnStart;
-    StateTransition OnUpdate;
-    StateTransition OnExit;
-    StateTransition TriggerTransition;
+    std::function<void()> OnStart;
+    std::function<void()> OnUpdate;
+    std::function<void()> OnExit;
+    std::function<bool()> TriggerTransition;
 };
+
+
+
 
 class StateMachine
 {
     public:
     StateMachine();
-    StateID currentState = {}; //Make sure we don't have a garbage value
+    
+    StateCallbacks currentState = {}; //Make sure we don't have a garbage value
     void HandleStateTransitions(); //
 
     private:
-    std::vector<StateCallbacks> Callbacks;
-    bool RegisterState(StateCallbacks _newCallback); //May need to return a bool if the state was unable to be added
+       std::vector<StateCallbacks> Callbacks;
+       void RegisterState(State _newState); //May need to return a bool if the state was unable to be added
     
     
 };

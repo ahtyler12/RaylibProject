@@ -1,27 +1,37 @@
 #include "StateMachine.h"
 
-bool StateMachine::RegisterState(StateCallbacks _newCallback)
+void StateMachine::RegisterState(State _newState)
 {
+     
+    StateCallbacks _newCallback = {};
+    _newCallback.OnStart = std::bind(State::OnStart, _newState);
+    _newCallback.OnExit = std::bind(State::OnExit, _newState);
+    _newCallback.OnUpdate = std::bind(State::OnUpdate, _newState);
+    _newCallback.TriggerTransition = std::bind(State::TriggerTransition, _newState);
+
     Callbacks.push_back(_newCallback);
-    return true;
 }
 
 StateMachine::StateMachine()
 {
-    StateCallbacks Standing = {.stateID = StateID::STANDING,.OnStart = Standing.OnStart, .OnUpdate = Standing.OnUpdate,.OnExit = Standing.OnExit};
-    RegisterState(Standing);
+    Standing standing = {};
 
-   Callbacks.at(0).OnStart;
+    RegisterState(standing);
+
+    currentState = Callbacks.at(0);
+
+    currentState.OnStart(); //Seems to call the State Parent Class as opposed to the Sub class function
+
+   
 }
 
 void StateMachine::HandleStateTransitions()
 {
-    for (auto callback : Callbacks)
+    StateCallbacks _newState = {};
+
+    if(currentState.TriggerTransition())
     {
-        if(callback.TriggerTransition)
-        {
-            //Do stuff
-        }
+        //Do stuff
     }
     
     

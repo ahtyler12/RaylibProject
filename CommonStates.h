@@ -1,41 +1,51 @@
 #include <iostream>
-
+#include <functional>
  #pragma once
 
 
 
 struct StateContext //Holds infromation from the Entity that owns the state machine
 {
+
     
 };
 
+struct State
+{
+   virtual void OnStart(){};
+   virtual void OnUpdate(){};
+   virtual void OnExit(){};
+   virtual bool TriggerTransition(){return true;};
 
-struct Standing
+};
+
+
+struct Standing : State
 {
    bool shouldTransition = false;
 
-   void OnStart()
+   void OnStart() override
    {
       std::cout << "Standing Start\n";
    }
 
-   void OnUpdate()
+   void OnUpdate() override
    {
       
    }
 
-   void OnExit()
+   void OnExit() override
    {
       std::cout << "Standing Exit\n";
    }
 
-   bool TriggerTransition()
+   bool TriggerTransition() override
    {
       return shouldTransition;
    }
 };
 
-struct Crouch
+struct Crouch : State
 {
    bool shouldTransition = false;
    void OnStart()
@@ -59,7 +69,7 @@ struct Crouch
    }
 };
 
-struct Jumping
+struct Jumping : State
 {
    void OnStart()
    {
@@ -77,7 +87,7 @@ struct Jumping
    }
 };
 
-struct Falling
+struct Falling : State
 {
    void OnStart()
    {

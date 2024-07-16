@@ -6,5 +6,7 @@ BoundingBox has 2 variables min and max. Hit boxes can then be stored as Boundin
 Function Callbacks can be declared with:
     #include <stdarg.h>
     std::function<ReturnType(Parameters) Name> 
+    then use std::bind(function, object, parameters);
+    if using a seperate object use std::bind(ClassName::MemberFunction, ObjectofClassName, parameters);
     OR
     ReturnType (__cdecl *Name)(Parameters);
