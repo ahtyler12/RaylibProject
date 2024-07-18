@@ -7,7 +7,7 @@
 
 struct StateContext //Holds infromation from the Entity that owns the state machine
 {
-   Vector3 position = {0.f,0.f,0.f};
+   Vector3 position = {0.f,0.f,0.f}; //Position Variable is bugged for whatever reason. the X and Y locations are in screen space instead of world space
    Vector3 velocity = {0.f,0.f,0.f};
    bool shouldDraw = false;
 };
@@ -18,6 +18,7 @@ enum StateID : __int32
     STANDING,
     CROUCHING,
     JUMPING,
+    FALLING,
     ATTACKING,
     SPECIAL,
     REACTION,
@@ -136,9 +137,9 @@ struct Jumping : public State
 
    void OnUpdate(StateContext _context)
    {
-      if(_context.velocity.y == 0)
+      if(_context.velocity.y < 0)
       {
-         nextState = STANDING;
+         nextState = FALLING;
       }
       
       // if(_context.shouldDraw)
@@ -164,7 +165,7 @@ struct Jumping : public State
    }
 };
 
-struct Falling : State
+struct Falling : public State
 {
    void OnStart()
    {
@@ -173,6 +174,10 @@ struct Falling : State
 
    void OnUpdate(StateContext _context)
    {
+      if(_context.position.y == 0)
+      {
+         nextState = STANDING;
+      }
 
    }
    
@@ -185,6 +190,51 @@ struct Falling : State
    {
       std::cout << "Falling End\n";
    }
+
+   StateID TriggerTransition() override
+   {
+      return nextState;
+   }
+};
+
+struct Attack : public State
+{
+   int duration = 100;
+
+   void OnStart()
+   {
+      std::cout << "Attack Start\n";
+   }
+
+   void OnUpdate(StateContext _context)
+   {
+      if(duration == 0)
+      {
+         nextState = STANDING;
+      }
+      else
+      {
+         duration -= 1;
+         std::cout << "Duration left " << duration << " \n";
+      }
+
+   }
+   
+   void DebugDraw(StateContext _context)
+   {
+      
+   }
+
+   void OnExit()
+   {
+      std::cout << "Attack End\n";
+   }
+
+   StateID TriggerTransition() override
+   {
+      return nextState;
+   }
+
 };
 
 

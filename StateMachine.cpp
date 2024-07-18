@@ -5,7 +5,6 @@ void StateMachine::RegisterState(std::shared_ptr<State> _newState, StateID _id)
      
     StateCallbacks _newCallback = {};
     _newCallback.stateID = _id;
-    _newCallback.name = _newState->name;
     _newCallback.OnStart = std::bind(State::OnStart, _newState);
     _newCallback.OnExit = std::bind(State::OnExit, _newState);
     _newCallback.OnUpdate = std::bind(State::OnUpdate, _newState, std::placeholders::_1);
@@ -21,9 +20,11 @@ StateMachine::StateMachine()
     context = {};
     auto standing = std::make_shared<Standing>();
     auto jumping = std::make_shared<Jumping>();
+    auto falling = std::make_shared<Falling>();
 
     RegisterState(standing, StateID::STANDING);
     RegisterState(jumping, StateID::JUMPING);
+    RegisterState(falling, StateID::FALLING);
 
     currentState = Callbacks.at(0);
 
@@ -50,7 +51,6 @@ void StateMachine::HandleStateTransitions(StateID _id)
             
     }
 
-    std::cout<<"The new Current state is "<< currentState.name << "\n";
     canTransition = true;
 
 }
@@ -60,20 +60,28 @@ void StateMachine::UpdateState()
     //std::cout<< "Receiving a position of X:"<< context.position.x << " , Y: " << context.position.y << " , Z: " << context.position.y <<  "\n";
     
     currentState.OnUpdate(context);
-    switch (currentState.OnTransition())
+    if(canTransition)
     {
-    case NONE:        
-        break;
-    case STANDING:
-        canTransition = false;
-        HandleStateTransitions(STANDING);
-        break;
-    case JUMPING:
-        canTransition = false;
-        HandleStateTransitions(JUMPING);
-        break;
-    
-    default:
-        break;
+        switch (currentState.OnTransition())
+        {
+            case NONE:        
+                break;
+            case StateID::STANDING:
+                canTransition = false;
+                HandleStateTransitions(STANDING);
+                break;
+            case StateID::JUMPING:
+                canTransition = false;
+                HandleStateTransitions(JUMPING);
+                break;
+            case StateID::FALLING:
+                canTransition = false;
+                HandleStateTransitions(FALLING);
+                break;
+            
+            default:
+                break;
+        }
     }
+
 }

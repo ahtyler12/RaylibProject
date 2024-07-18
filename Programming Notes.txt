@@ -10,3 +10,12 @@ Function Callbacks can be declared with:
     if using a seperate object use std::bind(ClassName::MemberFunction, ObjectofClassName, parameters);
     OR
     ReturnType (__cdecl *Name)(Parameters);
+
+Use Shared pointers over regular pointers for the most part. Normal pointers are unsafe and can cause memory leaks as they are not garbage collected at all. Shared pointers delete themselves when the
+reference counter is 0
+declared as std::shared_ptr<ClassName> 
+given a value as auto var = std::make_shared<ClassName>(args)
+
+if a function does not change data it should be declared as const. Setter functions are a good example of this type of function.
+if a function is modifying data in the class but not the data passed to it then the data passed in should be a const reference and not the direct value.
+

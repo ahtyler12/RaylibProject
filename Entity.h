@@ -86,7 +86,7 @@ class Entity
     ModelAnimation *entityAnimations;
     int entityAnimCount;
     int animIndex; 
-    size_t currentAnimFrame = 0;
+    int currentAnimFrame = 0;
     Vector3 rotationAxis, scale /*this might be useful for flipping the model need to test more*/;
     float rotationAngle;
     bool isFacingRight;

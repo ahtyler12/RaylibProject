@@ -268,7 +268,7 @@ void Entity::GatherInput()
             velocity.x = 0;
         }
 
-        if(IsKeyPressed(KEY_UP))
+        if(IsKeyDown(KEY_UP))
         {
             velocity.y = jumpVelocity;
         }

@@ -1,15 +1,23 @@
-
+Completed tasks go under date completed
 
 7/8/24
 -Finish Collision System
--Handle Updating the Pushbox position[x]
+-Handle Updating the Pushbox position
 -Handle Creating Hurtboxes
+
 7/12/24
 -Handle Hitboxes
 
 7/17/24
 -Handle updating state context
 
+7/18/24
+-Handle State Transitions
+
+
 -Finish Movement System
 -Finish State System
+-Give State System control over movement and input data
 -Finish Physics System
+-Create HitEvent System
+-Handle Model and Animation Loading

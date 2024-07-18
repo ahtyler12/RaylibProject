@@ -12,7 +12,6 @@
 struct StateCallbacks 
 {
     StateID stateID;
-    std::string name;
     std::function<void()> OnStart;
     std::function<void(StateContext)> OnUpdate;
     std::function<void()> OnExit;
