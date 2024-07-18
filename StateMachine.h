@@ -1,33 +1,22 @@
 #include "raylib.h"
 #include "CommonStates.h"
 #include <functional>
+#include <memory>
 #include <vector>
-#include <iostream>
+#include <iostream> //Remove this at some point. We really don't need it aside from debugging
 #include <string>
 
 #pragma once
 
-enum StateID : __int32
-{
-    STANDING,
-    CROUCHING,
-    JUMPING,
-    ATTACKING,
-    SPECIAL,
-    REACTION,
-    LAUNCHREACTION,
-    GUARDREACTION,
-    GRABREACTION
 
-};
-
-struct StateCallbacks
+struct StateCallbacks 
 {
     StateID stateID;
     std::string name;
     std::function<void()> OnStart;
-    std::function<void()> OnUpdate;
+    std::function<void(StateContext)> OnUpdate;
     std::function<void()> OnExit;
+    std::function<StateID()> OnTransition;
 };
 
 
@@ -37,13 +26,17 @@ class StateMachine
 {
     public:
     StateMachine();
-    
+
+    StateContext context;
     StateCallbacks currentState = {}; //Make sure we don't have a garbage value
-    void HandleStateTransitions(); //
+    void HandleStateTransitions(StateID _id); //
+    void UpdateState();
 
     private:
        std::vector<StateCallbacks> Callbacks;
-       void RegisterState(State* _newState); //May need to return a bool if the state was unable to be added
+       bool canTransition;
+       void RegisterState(std::shared_ptr<State> _newState, StateID _id); //May need to return a bool if the state was unable to be added
+      
     
     
 };

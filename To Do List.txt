@@ -7,6 +7,9 @@
 7/12/24
 -Handle Hitboxes
 
+7/17/24
+-Handle updating state context
+
 -Finish Movement System
 -Finish State System
 -Finish Physics System

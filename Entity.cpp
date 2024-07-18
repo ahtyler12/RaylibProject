@@ -21,6 +21,7 @@ Entity::Entity()
     animIndex = 0;
     jumpVelocity = 25.f;
     hitStopFrames = 0;
+    _stateMachine = std::make_shared<StateMachine>();
 }
 
 bool Entity::wasInputPressedOnFrame(InputTypes inputToCheck, int frame)
@@ -152,17 +153,20 @@ void Entity::Draw()
         DrawCubeWires(position, 10.f, 10.f, .1f, YELLOW);
         //Visual representation of the pushbox for debuging purposes
         DrawBoundingBox(pushBox, GREEN);
-        for(auto box : hurtBoxes)
-        {
-            DrawBoundingBox(box, BLUE);
-        }
+        // for(auto box : hurtBoxes)
+        // {
+        //     DrawBoundingBox(box, BLUE);
+        // }
     }
 }
 
 void Entity::Update()
 {
     UpdatePhysics();
-    stateMachine.HandleStateTransitions();
+
+    _stateMachine->context.shouldDraw = debug;
+
+    _stateMachine->UpdateState();
     //PlayAnimation(entityAnimations[animIndex]);
     
 }
@@ -218,6 +222,8 @@ void Entity::UpdatePhysics()
     hurtBoxes.at(0) = {(Vector3){position.x - 25, position.y, position.z},(Vector3){position.x + 25, position.y + 50, position.z}};
     hurtBoxes.at(1) = {(Vector3){position.x - 25, position.y+50, position.z},(Vector3){position.x + 25, position.y + 100, position.z}};
     hurtBoxes.at(2) = {(Vector3){position.x - 25, position.y+100, position.z},(Vector3){position.x + 25, position.y + 125, position.z}};
+    _stateMachine->context.position = position;
+    _stateMachine->context.velocity = velocity;
 
     //Ensure that the player never goes below the "Floor" of the level. 
     if(position.y < 0)
@@ -271,7 +277,7 @@ void Entity::GatherInput()
         {
             BoundingBox attackBox = {(Vector3){position.x + 50, position.y, position.z},(Vector3){position.x + 50, position.y + 100, position.z}}; //For testing out damage
             
-            for(int i = 0; i < otherEntity->hurtBoxes.size(); i++)
+            for(size_t i = 0; i < otherEntity->hurtBoxes.size(); i++)
             {
                 if( CheckCollisionBoxes(otherEntity->hurtBoxes[i], attackBox))
                 {

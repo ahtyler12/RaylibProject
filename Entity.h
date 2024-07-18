@@ -2,6 +2,7 @@
 #include "Hitbox.h"
 #include <iostream>
 #include <vector>
+#include <memory>
 #include "StateMachine.h"
  
 enum InputTypes
@@ -85,7 +86,7 @@ class Entity
     ModelAnimation *entityAnimations;
     int entityAnimCount;
     int animIndex; 
-    unsigned int currentAnimFrame = 0;
+    size_t currentAnimFrame = 0;
     Vector3 rotationAxis, scale /*this might be useful for flipping the model need to test more*/;
     float rotationAngle;
     bool isFacingRight;
@@ -128,7 +129,7 @@ class Entity
     std::vector<BoundingBox> hurtBoxes;
 
     /*State Data*/
-    StateMachine stateMachine = {};
+   std::shared_ptr<StateMachine> _stateMachine;
 
     bool debug;
     bool hasControl = false;
