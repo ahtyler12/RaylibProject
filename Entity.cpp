@@ -214,22 +214,21 @@ void Entity::UpdatePhysics()
 
     if(position.y > 0)
     {
-        velocity.y -= 2; //Should be a variable rather than a literal. 
+        _stateMachine->context.velocity.y -= 2; //Should be a variable rather than a literal. 
     }
 
-    position =  {position.x + velocity.x, position.y + velocity.y, position.z + velocity.z};
+    position =  {position.x + _stateMachine->context.velocity.x, position.y + _stateMachine->context.velocity.y, position.z + _stateMachine->context.velocity.z};
     pushBox = {(Vector3){position.x - 15, position.y, position.z},(Vector3){position.x + 15, position.y + 100, position.z}}; //Update the position of the push box
     hurtBoxes.at(0) = {(Vector3){position.x - 25, position.y, position.z},(Vector3){position.x + 25, position.y + 50, position.z}};
     hurtBoxes.at(1) = {(Vector3){position.x - 25, position.y+50, position.z},(Vector3){position.x + 25, position.y + 100, position.z}};
     hurtBoxes.at(2) = {(Vector3){position.x - 25, position.y+100, position.z},(Vector3){position.x + 25, position.y + 125, position.z}};
     _stateMachine->context.position = position;
-    _stateMachine->context.velocity = velocity;
+    
 
     //Ensure that the player never goes below the "Floor" of the level. 
     if(position.y < 0)
     {
         position.y = 0;
-        velocity.y = 0;
     }
 }
 
@@ -237,58 +236,58 @@ void Entity::GatherInput()
 {
     if(hasControl)
     {
-        if(IsKeyDown(KEY_LEFT))
+        if((IsKeyDown(KEY_LEFT) && isFacingRight) || (IsKeyDown(KEY_RIGHT) && !isFacingRight))
         {
-            if(isFacingRight)
-            {
-                inputCommand.backward = true;
-            }
-            else
-            {
-                inputCommand.forward = true;
-            }
-            
-            velocity.x -= 2;
-        }
-        else if(IsKeyDown(KEY_RIGHT))
-        {
-            if(isFacingRight)
-            {
-                inputCommand.forward = true;
-            }
-            else
-            {
-                inputCommand.backward = true;
-            }
-            velocity.x += 2;
-           
+            inputCommand.backward = true;
         }
         else
         {
-            velocity.x = 0;
+           inputCommand.backward = false;
         }
 
-        if(IsKeyDown(KEY_UP))
+        if((IsKeyDown(KEY_RIGHT) && isFacingRight) || (IsKeyDown(KEY_LEFT) && !isFacingRight))
         {
-            velocity.y = jumpVelocity;
+            inputCommand.forward = true;
+                               
         }
+        else
+        {
+            inputCommand.forward = false;
+           
+        }
+
+        if(IsKeyDown(KEY_DOWN))
+        {
+            inputCommand.down = true;           
+        }
+        else
+        {
+            inputCommand.down = false;
+        }
+    
+
+        if(IsKeyPressed(KEY_UP))
+        {
+            inputCommand.up = true;            
+        }
+        else
+        {
+            inputCommand.up = false;
+        }
+        
 
         if(IsKeyPressed(KEY_C))
         {
-            BoundingBox attackBox = {(Vector3){position.x + 50, position.y, position.z},(Vector3){position.x + 50, position.y + 100, position.z}}; //For testing out damage
-            
-            for(size_t i = 0; i < otherEntity->hurtBoxes.size(); i++)
-            {
-                if( CheckCollisionBoxes(otherEntity->hurtBoxes[i], attackBox))
-                {
-                    HitEvent testEvent;               
-                    testEvent.hitStop = 5;
-                    otherEntity->HandleHitEvent(testEvent);
-                    break; /*If only one of the hurtboxes collide with the attack box then don't allow it to hit more than once*/
-                }  
-            }
+            _stateMachine->HandleStateTransitions(ATTACKING);
             
         }
+
+
+        _stateMachine->context.input = {.up = inputCommand.up,
+                                        .down = inputCommand.down,
+                                        .forward = inputCommand.forward,
+                                        .back = inputCommand.backward
+                                        };
     }
     
 }

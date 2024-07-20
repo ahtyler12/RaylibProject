@@ -4,11 +4,21 @@
  #pragma once
 
 
+struct Inputs
+{
+   bool up;
+   bool down;
+   bool forward;
+   bool back;
+};
+
+
 
 struct StateContext //Holds infromation from the Entity that owns the state machine
 {
    Vector3 position = {0.f,0.f,0.f}; //Position Variable is bugged for whatever reason. the X and Y locations are in screen space instead of world space
    Vector3 velocity = {0.f,0.f,0.f};
+   Inputs input = {0};
    bool shouldDraw = false;
 };
 
@@ -37,7 +47,7 @@ struct State
    bool shouldTransition = false;
    StateID nextState = StateID::NONE;
    virtual void OnStart() = 0; //Treat like the initialization of the state. Any resources that should be aquired are created here
-   virtual void OnUpdate(StateContext _context) = 0;
+   virtual void OnUpdate(StateContext &_context) = 0;
    virtual void DebugDraw(StateContext _context) = 0;
    virtual void OnExit() = 0; //Treat like the deinitialization of the state. Any resources that are aquired are destroyed here
    virtual StateID TriggerTransition(){return StateID::NONE;};
@@ -59,11 +69,15 @@ struct Standing : public State
 
    }
 
-   void OnUpdate(StateContext _context) override
+   void OnUpdate(StateContext &_context) override
    {
-      if(_context.velocity.y > 0)
+      if(_context.input.up)
       {
          nextState = JUMPING;
+      }
+      else if(_context.input.down)
+      {
+         nextState = CROUCHING;
       }
 
       // if(_context.shouldDraw)
@@ -106,12 +120,16 @@ struct Crouch : public State
       std::cout << "Crouch Start\n";
    }
 
-   void OnUpdate(StateContext _context)
+   void OnUpdate(StateContext &_context) override
    {
+      if(!_context.input.down)
+      {
+         nextState = STANDING;
+      }
 
    }
 
-   void DebugDraw(StateContext _context)
+   void DebugDraw(StateContext _context) 
    {
       
    }
@@ -119,24 +137,36 @@ struct Crouch : public State
    void OnExit()
    {
       std::cout << "Crouch Exit\n";
+      nextState = StateID::NONE;
    }
 
    StateID TriggerTransition()
    {
-      return StateID::NONE;
+      return nextState;
    }
 };
 
 struct Jumping : public State
 {
    char name[256] = "Jumping";
+   float initialVelocity = 25.f;
+   float jumpDeceleration = -2;
+   bool startJump =  true;
    void OnStart()
    {
+
       std::cout << "Jump Start\n";
+      
    }
 
-   void OnUpdate(StateContext _context)
+   void OnUpdate(StateContext &_context)
    {
+      if(startJump)
+      {
+         _context.velocity.y = initialVelocity; //Very Hacky way of doing this. Probably an easier way of doing it
+         startJump = false;
+      }      
+
       if(_context.velocity.y < 0)
       {
          nextState = FALLING;
@@ -157,6 +187,7 @@ struct Jumping : public State
    void OnExit()
    {
       std::cout << "Jump Exit\n";
+      nextState = StateID::NONE;
    }
 
    StateID TriggerTransition() override
@@ -172,7 +203,7 @@ struct Falling : public State
       std::cout << "Falling Start\n";
    }
 
-   void OnUpdate(StateContext _context)
+   void OnUpdate(StateContext &_context)
    {
       if(_context.position.y == 0)
       {
@@ -189,6 +220,7 @@ struct Falling : public State
    void OnExit()
    {
       std::cout << "Falling End\n";
+      nextState = StateID::NONE;
    }
 
    StateID TriggerTransition() override
@@ -206,7 +238,7 @@ struct Attack : public State
       std::cout << "Attack Start\n";
    }
 
-   void OnUpdate(StateContext _context)
+   void OnUpdate(StateContext &_context)
    {
       if(duration == 0)
       {
@@ -228,6 +260,7 @@ struct Attack : public State
    void OnExit()
    {
       std::cout << "Attack End\n";
+      nextState = StateID::NONE;
    }
 
    StateID TriggerTransition() override
@@ -236,6 +269,47 @@ struct Attack : public State
    }
 
 };
+
+struct ReactionState : public State
+{
+   int duration = 100;
+
+   void OnStart()
+   {
+      std::cout << "Reaction Start\n";
+   }
+
+   void OnUpdate(StateContext &_context)
+   {
+      if(duration == 0)
+      {
+         nextState = STANDING;
+      }
+      else
+      {
+         std::cout << "Duration left " << duration << " \n";
+         duration -= 1;         
+      }
+
+   }
+   
+   void DebugDraw(StateContext _context)
+   {
+      
+   }
+
+   void OnExit()
+   {
+      std::cout << "Reaction End\n";
+      nextState = StateID::NONE;
+   }
+
+   StateID TriggerTransition() override
+   {
+      return nextState;
+   }
+};
+
 
 
 
