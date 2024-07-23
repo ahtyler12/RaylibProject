@@ -14,10 +14,16 @@ Completed tasks go under date completed
 7/18/24
 -Handle State Transitions
 
+7/22/24
+-Added Game State Object
+-Added Entity Manager Object
+-Handle Player Data i/o to file
+
 
 -Finish Movement System
 -Finish State System
 -Give State System control over movement and input data
 -Finish Physics System
 -Create HitEvent System
+-Move everything towards an ECS pattern
 -Handle Model and Animation Loading
