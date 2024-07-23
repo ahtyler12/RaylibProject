@@ -16,7 +16,7 @@ Entity::Entity()
     inputBuffer.resize(INPUT_BUFFER_SIZE);
     hurtBoxes.resize(3); 
     velocity = {0};
-    screenPosition = {0};
+   
     otherEntity = nullptr;
     animIndex = 0;
     jumpVelocity = 25.f;
@@ -212,12 +212,12 @@ void Entity::UpdatePhysics()
         }
     }
 
-    if(position.y > 0)
-    {
-        _stateMachine->context.velocity.y -= 2; //Should be a variable rather than a literal. 
-    }
+    // if(position.y > 0)
+    // {
+    //     _stateMachine->context.velocity.y -= 2; //Should be a variable rather than a literal. 
+    // }
 
-    position =  {position.x + _stateMachine->context.velocity.x, position.y + _stateMachine->context.velocity.y, position.z + _stateMachine->context.velocity.z};
+    position =  {position.x + _stateMachine->context.velocity.x, position.y + _stateMachine->context.velocity.y, position.z + _stateMachine->context.velocity.z}; //Bug where the velocity from the last state carries over to new state. Need to fix
     pushBox = {(Vector3){position.x - 15, position.y, position.z},(Vector3){position.x + 15, position.y + 100, position.z}}; //Update the position of the push box
     hurtBoxes.at(0) = {(Vector3){position.x - 25, position.y, position.z},(Vector3){position.x + 25, position.y + 50, position.z}};
     hurtBoxes.at(1) = {(Vector3){position.x - 25, position.y+50, position.z},(Vector3){position.x + 25, position.y + 100, position.z}};

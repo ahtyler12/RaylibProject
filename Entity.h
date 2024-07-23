@@ -75,7 +75,6 @@ class Entity
     Vector3 velocity;
     float jumpVelocity;
     Vector3 position;
-    Vector3 screenPosition;
     //Current number of jumps
     int jumpCount;
     //Actions available in the air

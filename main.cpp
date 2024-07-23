@@ -1,6 +1,7 @@
 #include <iostream>
 #include <raylib.h>
-#include "Entity.h"
+#include "GameState.h"
+
 
 
 using namespace std;
@@ -14,6 +15,7 @@ int main () {
     SetConfigFlags(FLAG_MSAA_4X_HINT);
     InitWindow(screenWidth, screenHeight, "My first RAYLIB program!");
 
+/*This Stuff Should be moved to the Game Object to keep this looking clean*/
 
     Camera camera = { 0 };
     camera.position = (Vector3){ 0.0f, 90.0f, 350.0f };    // Camera position
@@ -21,7 +23,8 @@ int main () {
     camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };          // Camera up vector (rotation towards target)
     camera.fovy = 45.0f;                                // Camera field-of-view Y
     camera.projection = CAMERA_PERSPECTIVE;             // Camera projection type
-   
+
+
     Vector3 player1Start = {-50.f,0.f,0.f};
     Vector3 player2Start = {50.f,0.f,0.f};
     Entity entities[2];
@@ -34,11 +37,11 @@ int main () {
     entities[0].otherEntity = &entities[1];
     entities[1].otherEntity = &entities[0];
 
-   
     const int MAX_PLAYERS = 2;
 
     
     SetTargetFPS(60);
+    GameState gameState;
 
     while (!WindowShouldClose())
     { 

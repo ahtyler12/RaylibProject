@@ -149,7 +149,7 @@ struct Crouch : public State
 struct Jumping : public State
 {
    char name[256] = "Jumping";
-   float initialVelocity = 25.f;
+   float initialVelocity = 40.f;
    float jumpDeceleration = -2;
    bool startJump =  true;
    void OnStart()
@@ -165,7 +165,8 @@ struct Jumping : public State
       {
          _context.velocity.y = initialVelocity; //Very Hacky way of doing this. Probably an easier way of doing it
          startJump = false;
-      }      
+      }   
+      _context.velocity.y -=4;   
 
       if(_context.velocity.y < 0)
       {
@@ -187,6 +188,7 @@ struct Jumping : public State
    void OnExit()
    {
       std::cout << "Jump Exit\n";
+      startJump =  true;
       nextState = StateID::NONE;
    }
 
@@ -205,6 +207,7 @@ struct Falling : public State
 
    void OnUpdate(StateContext &_context)
    {
+      //_context.velocity.y -=2;   
       if(_context.position.y == 0)
       {
          nextState = STANDING;
