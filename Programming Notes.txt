@@ -19,6 +19,9 @@ given a value as auto var = std::make_shared<ClassName>(args)
 if a function does not change data it should be declared as const. Setter functions are a good example of this type of function.
 if a function is modifying data in the class but not the data passed to it then the data passed in should be a const reference and not the direct value.
 
+
+Tasks.json should have **.cpp to enable compiling all files in all folders.
+
 Consider Using an Entity Component System versus an Object Oriented approach
 Basic Game Loop would look something like:
 Update Physics Components

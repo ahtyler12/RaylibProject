@@ -27,3 +27,4 @@ Completed tasks go under date completed
 -Create HitEvent System
 -Move everything towards an ECS pattern
 -Handle Model and Animation Loading
+-Create GameData Object

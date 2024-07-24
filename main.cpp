@@ -1,10 +1,7 @@
 #include <iostream>
 #include <raylib.h>
+#include "include/ggponet.h"
 #include "GameState.h"
-
-
-
-using namespace std;
 
 
 
@@ -23,7 +20,6 @@ int main () {
     camera.up = (Vector3){ 0.0f, 1.0f, 0.0f };          // Camera up vector (rotation towards target)
     camera.fovy = 45.0f;                                // Camera field-of-view Y
     camera.projection = CAMERA_PERSPECTIVE;             // Camera projection type
-
 
     Vector3 player1Start = {-50.f,0.f,0.f};
     Vector3 player2Start = {50.f,0.f,0.f};
@@ -51,6 +47,8 @@ int main () {
             entities[i].GatherInput();
                         
         } 
+
+
         
         BeginDrawing();
         ClearBackground(RAYWHITE);
